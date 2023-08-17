@@ -10,7 +10,7 @@ const Project = require('../models/project');
 const middleware = require('../middleware/index1');
 const { isAdmin } = require("../middleware/index1");
 const Supervisor = require('../models/supervisor');
-
+const Cluster = require('../models/cluster');
 
 const fileStorageEngine = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -26,10 +26,11 @@ const upload = multer({ storage: fileStorageEngine });
 
 router.get('/',isAdmin,  function (req, res) {
     // res.send("hello")
-    Project.find({}).populate('supervisor')
+    Project.find({}).populate('supervisor').populate('cluster')
     .then(async allProjects=>{
             const supervisors = await Supervisor.find();
-            res.render('admin/admin', { projects: allProjects ,supervisors})
+            const clusters = await Cluster.find();
+            res.render('admin/admin', { projects: allProjects ,supervisors,clusters})
     })
     .catch(err=>console.log(err))
 
@@ -153,5 +154,49 @@ router.post('/add-supervisor', async (req, res) => {
         res.redirect('/admin'); // Redirect back to the admin page with an error message
     }
 });
+
+
+/////////////////////////////////////////////
+//delete cluster
+router.get('/delete-cluster', async (req, res) => {
+    try {
+        const clusters = await Cluster.find();
+        console.log("uck ",{clusters})
+        res.render('admin/delete-cluster', { clusters }); // Pass clusters data to the template
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+//Handle delete cluster form submission
+router.post('/delete-cluster', async (req, res) => {
+    try {
+      const clusterIdToDelete = req.body.clusterToDelete;
+      await Cluster.findByIdAndRemove(clusterIdToDelete);
+      res.redirect('/admin'); // Redirect back to the form
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+//Adding the cluster
+router.post('/add-cluster', async (req, res) => {
+    try {
+        const clusterName = req.body.clusterName;
+        const newCluster = new Cluster({ name: clusterName });
+        await newCluster.save();
+        req.flash('success', 'Cluster added successfully');
+        res.redirect('/admin'); // Redirect back to the admin page
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Error adding Cluster');
+        res.redirect('/admin'); // Redirect back to the admin page with an error message
+    }
+});
+
+
 
 module.exports = router;

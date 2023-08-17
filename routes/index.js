@@ -2,8 +2,10 @@ const express = require("express");
 var router = express.Router();
 const passport = require("passport");
 const User = require("../models/user");
+// const Supervisor = require('../models/supervisor');
+// const Cluster = require('../models/cluster');
 
-// ROot
+// Root
 router.get("/", function (req, res) {
   res.redirect("/projects");
 });

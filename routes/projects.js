@@ -6,6 +6,8 @@ const middleware = require('../middleware/index1');
 const User = require("../models/user");
 const { isNull } = require('url/util');
 const Supervisor = require('../models/supervisor');
+const Cluster = require('../models/cluster');
+
 // const supervisorss= ["Aman Shakya",
 // "Anand Kumar Shah",
 // "Anil Verma",
@@ -19,23 +21,46 @@ router.get('/', async function (req, res) {
   // console.log(req.isAuthenticated())
   // console.log('helloworldkaldsjalkdf')
   const supervisors = await Supervisor.find();
-  console.log("fsdfsa ",supervisors)
-  Project.find().populate('supervisor').then(allProjects=>  {
+  const clusters = await Cluster.find();
+  // console.log("fsdfsa ",supervisors)
+  Project.find().populate('supervisor').populate('cluster').then(allProjects=>  {
     console.log(allProjects);
       res.render('projects/index', {
             projects: allProjects,
             currentUser:  req.user,
-            supervisors: supervisors
+            supervisors: supervisors,
+            clusters: clusters
          })
         }
   ).catch(err=>console.log(err))
+
+  //For Clusters
+ 
+  // console.log("Cluster loaded",clusters)
+  // Project.find().populate('cluster').then(allProjects=>  {
+  //   console.log(allProjects);
+  //     res.render('projects/index', {
+  //           projects: allProjects,
+  //           currentUser:  req.user,
+  //           clusters: clusters
+  //        })
+  //       }
+  // ).catch(err=>console.log(err))
+  
 })
 
 router.get('/new', middleware.isLoggedIn, async function (req, res) {
   const supervisors = await Supervisor.find();
+  const clusters = await Cluster.find();
   res.render('projects/new',
-  {supervisors})
+  {supervisors,clusters})
 })
+
+// router.get('/new', middleware.isLoggedIn, async function (req, res) {
+//   const clusters = await Cluster.find();
+//   res.render('projects/new',
+//   {clusters})
+// })
 
 
 //Add Supervisor
@@ -50,7 +75,16 @@ router.get('/add-supervisor', async (req, res) => {
 });
 
 
-
+//Add Cluster
+router.get('/add-cluster', async (req, res) => {
+  try {
+    const clusters = await Cluster.find({}, 'name'); // Fetch only the name field
+    res.render('admin/add-cluster', { clusters });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 //Add project
 router.post('/', middleware.isLoggedIn, function (req, res) {
@@ -60,6 +94,7 @@ router.post('/', middleware.isLoggedIn, function (req, res) {
   var link = req.body.link
   var image = req.body.image
   var supervisor = req.body.supervisor
+  var cluster = req.body.cluster
   // var authors = req.body.authors
   var namearray = [];
   var pending = req.body.member.length;
@@ -85,7 +120,7 @@ router.post('/', middleware.isLoggedIn, function (req, res) {
         var reviewStatus = false
         var abstract = req.body.abstract
 
-        var newProject = { title: title, image: image, description: description, author: author, year: year, link: link, supervisor: supervisor, reviewStatus: reviewStatus, abstract: abstract }
+        var newProject = { title: title, image: image, description: description, author: author, year: year, link: link, supervisor: supervisor, cluster: cluster, reviewStatus: reviewStatus, abstract: abstract }
 
         Project.create(newProject, function (err, newProj) {
           if (err) {
@@ -107,12 +142,14 @@ router.post('/', middleware.isLoggedIn, function (req, res) {
 router.get('/myprojects/:id', middleware.isLoggedIn, (req, res) => {
   try {
     console.log('helloworld')
-    Project.find({ "author.username": req.params.id }, function (err, allProjects) {
+    Project.find({ "author.username": req.params.id }, async function (err, allProjects) {
+      const supervisors = await Supervisor.find();
+      const clusters = await Cluster.find();
       if (err) {
         console.log(err);
       }
       else {
-        res.render('projects/index', { projects: allProjects })
+        res.render('projects/index', { projects: allProjects,supervisors,clusters })
       }
     })
 
@@ -121,8 +158,25 @@ router.get('/myprojects/:id', middleware.isLoggedIn, (req, res) => {
   }
 });
 
-
-
+/////////////////////////////////////////////////////////////////////////////////
+// router.get('/', async function (req, res) {
+//   // const user = await User.find();
+//   // console.log(req.isAuthenticated())
+//   // console.log('helloworldkaldsjalkdf')
+//   const supervisors = await Supervisor.find();
+//   const clusters = await Cluster.find();
+//   console.log("fsdfsa ",supervisors)
+//   Project.find().populate('supervisor').populate('cluster').then(allProjects=>  {
+//     console.log(allProjects);
+//       res.render('projects/index', {
+//             projects: allProjects,
+//             currentUser:  req.user,
+//             supervisors: supervisors,
+//             clusters: clusters
+//          })
+//         }
+//   ).catch(err=>console.log(err))
+////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -169,6 +223,7 @@ router.get('/search', async (req, res) => {
     const searchQuery = req.query.dsearch || '';
     const yearFilter = req.query.yearFilter || '';
     const supervisorFilter = req.query.supervisorFilter || '';
+    const clusterFilter = req.query.clusterFilter || '';
 
     const query = {
       $or: [
@@ -187,37 +242,78 @@ router.get('/search', async (req, res) => {
       // query['supervisor.name'] = { '$regex': new RegExp(supervisorFilter, 'i') };
       query.supervisor = supervisorFilter;
     }
+
+    if (clusterFilter){
+      console.log(clusterFilter)
+      query.cluster = clusterFilter;
+    }
+
     console.log(query)
-    const projects = await Project.find(query).populate('supervisor');
+    const projects = await Project.find(query).populate('supervisor').populate('cluster');
     const supervisors= await Supervisor.find();
+    const clusters = await Cluster.find();
     console.log(projects)
     res.render('projects/index', {
        projects,
-       supervisors,    
+       supervisors,
+       clusters,    
       currentUser:  req.user,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send('Internal Server Error');
   }
+
+  // const projects = await Project.find(query).populate('cluster');
+  // const clusters = await Cluster.find();
+//   res.render('projects/index', {
+//     projects,
+//     supervisors,    
+//    currentUser:  req.user,
+//  });
+ 
 });
+
+
+// router.get('/:id', function (req, res) {
+//   Project.findById(req.params.id).populate('comments').populate('supervisor').exec(function (err, foundProject) {
+//     if (err) {
+//       console.log("Error:", err);
+//     } else {
+//       console.log(foundProject)
+//       res.render('projects/show', { project: foundProject });
+//     }
+//   });
+// });
+
+
+// router.get('/:id', function (req, res) {
+//   Project.findById(req.params.id).populate('comments').populate('cluster').exec(function (err, foundProject) {
+//     if (err) {
+//       console.log("Error:", err);
+//     } else {
+//       console.log(foundProject)
+//       res.render('projects/show', { project: foundProject });
+//     }
+//   });
+// });
+
 
 router.get('/:id', function (req, res) {
-  Project.findById(req.params.id).populate('comments').populate('supervisor').exec(function (err, foundProject) {
-    if (err) {
-      console.log("Error:", err);
-    } else {
-      console.log(foundProject)
-      res.render('projects/show', { project: foundProject });
-    }
-  });
+  Project.findById(req.params.id)
+    .populate('comments')
+    .populate('supervisor')
+    .populate('cluster')
+    .exec(function (err, foundProject) {
+      if (err) {
+        console.log("Error:", err);
+        res.status(500).send('Internal Server Error');
+      } else {
+        console.log(foundProject);
+        res.render('projects/show', { project: foundProject });
+      }
+    });
 });
-
-
-
-
-
-
 
 
 
@@ -226,16 +322,21 @@ router.get('/:id', function (req, res) {
 router.get('/:id/edit', middleware.checkProjectOwnership, function (req, res) {
   Project.findById(req.params.id)
   .populate('supervisor')
+  .populate('cluster')
   .then(async foundProject=>{
     // console.log(`'${foundProject.supervisor}'  ==  '${supervisors[0]}'`)
     // console.log("hello ",foundProject.supervisor == supervisors[0])
     const supervisors = await Supervisor.find();
+    const clusters = await Cluster.find();
     const currentSupervisor= foundProject.supervisor._id;
+    const currentCluster= foundProject.cluster._id;
     console.log("supervisors: ", supervisors);
     res.render("projects/edit", {
       project: foundProject,
       currentSupervisor,
-      supervisors: supervisors
+      currentCluster,
+      supervisors: supervisors,
+      clusters: clusters
      })
     })
     .catch(err => console.log(err))

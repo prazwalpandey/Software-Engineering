@@ -66,6 +66,35 @@
 </form>  
     </div>  
 
+<br><br>
+
+<!-- Cluster Section -->
+<div class="Cluster" style="width: 80%;margin:0% 10%;">
+  <h2>Add New Cluster</h2>
+<form action="/admin/add-cluster" method="POST">
+<label for="clusterName">Cluster Name:</label>
+<input type="text" name="clusterName" required>
+<button type="submit">Add Cluster</button>
+</form>
+
+<h2>Delete Cluster</h2>
+<form action="/admin/delete-cluster" method="POST">
+<label for="clusterToDelete">Select Cluster to Delete:</label>
+<select name="clusterToDelete">
+<% clusters.forEach(cluster => { %>
+  <option value="<%= cluster._id %>"><%= cluster.name %></option>
+<% }); %>
+</select>
+<button type="submit">Delete Cluster</button> 
+</form>  
+</div>  
+
+
+
+
+
+
+
     <div class="projectlist container">
       <h1>Project List</h1>
 
@@ -93,6 +122,7 @@
                     <% } %> 
                     </div>
                     <div class="supervisor">Supervisor: <%=project.supervisor.name%></div>
+                    <div class="cluster">Cluster: <%=project.cluster.name%></div>
                     <div class="status">
                       <% if(project.reviewStatus){%>
                       <h4>Approved</h4>
@@ -135,6 +165,8 @@
                         <% } %> 
                         </div>
                         <div class="supervisor">Supervisor: <%=project.supervisor.name%></div>
+                        <div class="cluster">Cluster: <%=project.cluster.name%></div>
+                        
                         <div class="status">
                           <% if(project.reviewStatus){%>
                           <h4>Approved</h4>

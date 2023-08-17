@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const cluster = require('./cluster');
 
 var projectSchema = new mongoose.Schema({
     title: String,
@@ -22,7 +23,11 @@ var projectSchema = new mongoose.Schema({
     supervisor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Supervisor'
-      }
+      },
+    cluster: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Cluster'
+    }
 })
 
 module.exports = mongoose.model("Project", projectSchema)

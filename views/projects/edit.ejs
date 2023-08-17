@@ -24,7 +24,7 @@
 
                     <label for="supervisor">Supervisor</label>
                     <select name="project[supervisor]" id="supervisor" required>
-                    <option value="">--Please choose an option--</option>
+                    <option value="">-Cluster-</option>
 
                      <% supervisors.forEach(supervisor => { %>
                       <option 
@@ -36,6 +36,21 @@
                     <% }); %>
                   </select>
 
+
+                  <label for="cluster">Cluster</label>
+                    <select name="project[cluster]" id="cluster" required>
+                    <option value="">-Cluster-</option>
+
+                     <% clusters.forEach(cluster => { %>
+                      <option 
+                        value="<%= cluster._id %>"
+                        <%= currentCluster == cluster._id ? 'selected' : '' %>
+                        >
+                        <%= cluster.name %>
+                      </option>
+                    <% }); %>
+                    
+                  </select>
                     <!-- <input class="boxSize" type="text" 
                     name="project[supervisor]" value="<%=project.supervisor%>"  
                     placeholder=" Supervisor"required> -->

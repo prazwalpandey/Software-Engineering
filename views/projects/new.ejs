@@ -21,11 +21,22 @@
                   
                     <label for="supervisor">Supervisor</label>
                     <select name="supervisor" id="supervisor" required>
-                    <option value="">--Please choose an option--</option>
+                    <option value="">-Supervisor-</option>
     
                      <% supervisors.forEach(supervisor => { %>
                       <option value="<%= supervisor._id %>">
                         <%= supervisor.name %>
+                      </option>
+                    <% }); %>
+                  </select>
+
+                  <label for="cluster">Cluster</label>
+                    <select name="cluster" id="cluster" required>
+                    <option value="">-Cluster-</option>
+    
+                     <% clusters.forEach(cluster => { %>
+                      <option value="<%= cluster._id %>">
+                        <%= cluster.name %>
                       </option>
                     <% }); %>
                   </select>

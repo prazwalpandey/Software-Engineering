@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const supervisorSchema = new mongoose.Schema({
+const clusterSchema = new mongoose.Schema({
   name: String
 });
 
-module.exports = mongoose.model("Cluster", supervisorSchema);
+module.exports = mongoose.model("Cluster", clusterSchema);

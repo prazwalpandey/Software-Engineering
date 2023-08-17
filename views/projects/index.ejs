@@ -41,7 +41,7 @@
             <!-- placeholder="Filter by Supervisor" /> -->
 
             <select name="supervisorFilter" id="supervisorFilter" >
-              <option value="">--Please choose an option--</option>
+              <option value="">-Supervisor-</option>
 
                <% supervisors.forEach(supervisor => { %>
                 <option 
@@ -51,7 +51,18 @@
                 </option>
               <% }); %>
             </select>
-
+            <!-- <form action="/filtered-projects" method="GET"> -->
+              <!-- <label for="clusterFilter">Select Cluster:</label> -->
+              <select name="clusterFilter" id="clusterFilter">
+                  <option value="">-Cluster-</option>
+                  <% clusters.forEach(cluster => { %>
+                      <option 
+                      value="<%= cluster._id %>"
+                      >
+                      <%= cluster.name %>
+                    </option>
+                  <% }); %>
+              </select>
             <Button type="submit"
               ><i class="fa-solid fa-magnifying-glass"></i
             ></Button>
@@ -105,6 +116,9 @@
           </div>
           <div >
             <strong>Supervisor:</strong> <%=project.supervisor.name%>
+          </div>
+          <div >
+            <strong>Cluster:</strong> <%=project.cluster.name%>
           </div>
           <br />
           <div class="grid">
