@@ -6,5 +6,5 @@ The project aims to act as a central archive for links to various project submit
 The current state of the project acts as a proof of concept and maybe deployed as it is or with minor changes to the Database Models as per the information that needs to be stored and is not already implemented.
 
 For deployment and other user documentation refer:
-https://docs.google.com/document/d/1af9bnYN8k7F8Y_8LfHhTOIwrpY7dGFOdha6DLDRYPXI/edit#heading=h.6ttwkm2dcrbb
+[https://docs.google.com/document/d/1af9bnYN8k7F8Y_8LfHhTOIwrpY7dGFOdha6DLDRYPXI/edit#heading=h.6ttwkm2dcrbb](https://docs.google.com/document/d/1jWF4hSJ7juQwQpUKSXNoYhTj1-y2KqPwGum0ntpi-5c/edit#heading=h.zf6387ii7l0h)https://docs.google.com/document/d/1jWF4hSJ7juQwQpUKSXNoYhTj1-y2KqPwGum0ntpi-5c/edit#heading=h.zf6387ii7l0h
 
